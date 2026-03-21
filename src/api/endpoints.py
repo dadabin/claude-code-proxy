@@ -47,11 +47,18 @@ async def create_message(
 ):
     request_id = str(uuid.uuid4())
     started_at = time.perf_counter()
-    route_result = model_manager.resolve_route(request.model)
+    route_result = None
+    model_name = request.model.strip()
+    try:
+        route_result = model_manager.resolve_route(request.model)
+    except Exception as e:
+        logger.error(f"Unexpected error processing request: {e}")
+        model_list_names = []
+        [model_list_names.extend([item["model_map"]["big"], item["model_map"]["middle"],item["model_map"]["small"]]) for item in model_manager.config.providers]
+        raise HTTPException(status_code=500, detail=f"you set model ‘{model_name}’ not support ！！！ allow use models: {set(model_list_names)} ")
     openai_client = client_registry.get_client(route_result["provider_name"])
     openai_request = convert_claude_to_openai(request, route_result["target_model"])
     audit_input = build_audit_input(request)
-
     try:
         if await http_request.is_disconnected():
             raise HTTPException(status_code=499, detail="Client disconnected")
