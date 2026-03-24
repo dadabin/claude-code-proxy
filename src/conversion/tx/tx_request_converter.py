@@ -100,7 +100,13 @@ def convert_claude_to_openai(
         openai_tools = []
         for tool in claude_request.tools:
             if tool.name and tool.name.strip():
-                myinput_schema = tool.input_schema
+                myinput_schema = {
+                    "type": tool.input_schema.get("type"),
+                    "properties": tool.input_schema.get("properties"),
+                    "required" : tool.input_schema.get("required"),
+                    "additionalProperties": tool.input_schema.get("additionalProperties")
+
+                }
                 # if myinput_schema.get("additionalProperties") == {}:
                 #     myinput_schema["additionalProperties"] = False
                 openai_tools.append(
