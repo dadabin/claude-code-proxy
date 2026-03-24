@@ -129,6 +129,9 @@ def convert_claude_to_openai(
             ensure_ascii=False,
         ),
     )
+    print("XXxxxxxx")
+    print(json.dumps(openai_request))
+    print("XXxxxxxx")
 
     return openai_request
 
