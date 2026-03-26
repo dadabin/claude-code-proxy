@@ -77,36 +77,35 @@ def convert_claude_to_openai(
         "stream": claude_request.stream,
     }
 
-    def process_additional_properties(obj):
-
-        if isinstance(obj, dict):
-            if "additionalProperties" in obj:
-                additional_properties = obj["additionalProperties"]
-                if not isinstance(additional_properties,bool) and not additional_properties:
-                    obj["additionalProperties"] = False
-
-            for key, value in obj.items():
-                obj[key] = process_additional_properties(value)
-
-        elif isinstance(obj, list):
-            for idx, item in enumerate(obj):
-                obj[idx] = process_additional_properties(item)
-
-        return obj
-
-    claude_request.tools = process_additional_properties(claude_request.tools)
+    # def process_additional_properties(obj):
+    #
+    #     if isinstance(obj, dict):
+    #         if "additionalProperties" in obj:
+    #             additional_properties = obj["additionalProperties"]
+    #             if not isinstance(additional_properties,bool) and not additional_properties:
+    #                 obj["additionalProperties"] = False
+    #
+    #         for key, value in obj.items():
+    #             obj[key] = process_additional_properties(value)
+    #
+    #     elif isinstance(obj, list):
+    #         for idx, item in enumerate(obj):
+    #             obj[idx] = process_additional_properties(item)
+    #
+    #     return obj
+    #
+    # claude_request.tools = process_additional_properties(claude_request.tools)
 
     if claude_request.tools:
         openai_tools = []
         for tool in claude_request.tools:
             if tool.name and tool.name.strip():
-                myinput_schema = {
-                    "type": tool.input_schema.get("type"),
-                    "properties": tool.input_schema.get("properties"),
-                    "required" : tool.input_schema.get("required"),
-                    "additionalProperties": tool.input_schema.get("additionalProperties")
-
-                }
+                # myinput_schema = {
+                #     "type": tool.input_schema.get("type"),
+                #     "properties": tool.input_schema.get("properties"),
+                #     "required" : tool.input_schema.get("required"),
+                #     "additionalProperties": tool.input_schema.get("additionalProperties")
+                # }
                 # if myinput_schema.get("additionalProperties") == {}:
                 #     myinput_schema["additionalProperties"] = False
                 openai_tools.append(
@@ -115,7 +114,7 @@ def convert_claude_to_openai(
                         Constants.TOOL_FUNCTION: {
                             "name": tool.name,
                             "description": tool.description or "",
-                            "parameters": myinput_schema,
+                            "parameters": tool.input_schema,
                         },
                     }
                 )
