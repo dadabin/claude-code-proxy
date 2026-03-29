@@ -57,12 +57,6 @@ async def create_message(
         [model_list_names.extend([item["model_map"]["big"], item["model_map"]["middle"],item["model_map"]["small"]]) for item in model_manager.config.providers]
         raise HTTPException(status_code=500, detail=f"you set model ‘{model_name}’ not support ！！！ allow use models: {set(model_list_names)} ")
     openai_client = client_registry.get_client(route_result["provider_name"])
-    # openai_request = None
-    # if route_result.get("platform") == "tx":
-    #     from src.conversion.tx.tx_request_converter import convert_claude_to_openai as c2v
-    #     openai_request = c2v(request, route_result["target_model"])
-    # else:
-    #     openai_request = convert_claude_to_openai(request, route_result["target_model"])
     openai_request = convert_claude_to_openai(request, route_result["target_model"])
     audit_input = build_audit_input(request)
     try:
